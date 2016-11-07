@@ -1,0 +1,21 @@
+{application, statsd_erlang, [
+  {description, "StatsD client"},
+  {vsn, "1.0.0"},
+  {registered, []},
+  {applications, [
+    kernel,
+    stdlib,
+    crypto
+  ]},
+  {mod, {statsderl_app, []}},
+  {env, [{port, 8125}]},
+  {modules,[]},
+  {maintainers, ["Ivan Dyachkov", "Zaiming Shi"]},
+  {licenses, ["Apache License 2.0"]},
+  {links, [{"Github", "https://github.com/klarna/statsd-erlang"}]},
+  {build_tools, ["make", "rebar", "rebar3"]},
+  {files, ["src", "rebar.config",
+           "README.md","LICENSE",
+           "Makefile", "erlang.mk"]}
+]}.
+

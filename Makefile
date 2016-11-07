@@ -1,54 +1,16 @@
-CACHEGRIND=qcachegrind
-ELVIS=./bin/elvis
-REBAR3=./bin/rebar3
+PROJECT = statsd_erlang
+PROJECT_DESCRIPTION = "StatsD client"
+PROJECT_VERSION = 1.0.0
 
-all: compile
+MORE_ERLC_OPTS = -DAPPLICATION=$(PROJECT)
 
-clean:
-	@echo "Running rebar3 clean..."
-	@$(REBAR3) clean -a
+include erlang.mk
 
-compile:
-	@echo "Running rebar3 compile..."
-	@$(REBAR3) as compile compile
+ERLC_OPTS += $(MORE_ERLC_OPTS)
 
-coveralls:
-	@echo "Running rebar3 coveralls send..."
-	@$(REBAR3) as test coveralls send
+vsn-check:
+	./vsn-check.sh $(PROJECT_VERSION)
 
-dialyzer:
-	@echo "Running rebar3 dialyze..."
-	@$(REBAR3) dialyzer
+hex-publish: distclean
+	$(verbose) rebar3 hex publish
 
-edoc:
-	@echo "Running rebar3 edoc..."
-	@$(REBAR3) as edoc edoc
-
-elvis:
-	@echo "Running elvis rock..."
-	@$(ELVIS) rock
-
-eunit:
-	@echo "Running rebar3 eunit..."
-	@$(REBAR3) do eunit -cv, cover -v
-
-profile:
-	@echo "Profiling..."
-	@$(REBAR3) as test compile
-	@erl -noshell \
-	     -pa _build/test/lib/*/ebin \
-	     -pa _build/test/lib/*/test \
-	     -eval 'statsderl_profile:fprofx()' \
-	     -eval 'init:stop()'
-	@_build/test/lib/fprofx/erlgrindx -p fprofx.analysis
-	@$(CACHEGRIND) fprofx.cgrind
-
-test: elvis xref eunit dialyzer
-
-travis: test coveralls
-
-xref:
-	@echo "Running rebar3 xref..."
-	@$(REBAR3) xref
-
-.PHONY: clean compile coveralls dialyzer edoc elvis eunit profile xref

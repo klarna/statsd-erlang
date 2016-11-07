@@ -1,21 +1,30 @@
-addons:
-  apt:
-    sources:
-      - ubuntu-toolchain-r-test
-    packages:
-      - gcc-5
-cache:
-  directories:
-    - $HOME/.cache/rebar3
-    - $TRAVIS_BUILD_DIR/_build
-env:
-  - CC=gcc-5
-install: true
 language: erlang
+
+sudo: required
+
+before_install:
+  - git clone https://github.com/erlang/rebar3.git
+  - pushd .
+  - cd rebar3
+  - ./bootstrap
+  - sudo mv rebar3 /usr/local/bin/
+  - popd
+
 notifications:
   email: false
+
 otp_release:
-  - 18.3
+  - 18.2.1
   - 17.5
-script: "make travis"
-sudo: false
+
+script:
+  - make vsn-check
+  - make
+  - make xref
+  - make edoc
+  - make distclean
+  - rebar get-deps
+  - rebar compile
+  - make distclean
+  - rebar3 compile
+
